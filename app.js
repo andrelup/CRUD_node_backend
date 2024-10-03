@@ -30,7 +30,6 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
@@ -56,11 +55,10 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message });
 });
 
+let uri =
+  "mongodb+srv://andrelup:crud_project@cluster0.awtuofy.mongodb.net/blog_crud";
 mongoose
-  .connect(
-    'mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/messages?retryWrites=true'
-  )
-  .then(result => {
+  .connect(uri).then(result => {
     app.listen(8080);
   })
   .catch(err => console.log(err));
