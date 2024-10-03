@@ -1,12 +1,11 @@
-const fs = require('fs');
-const path = require('path');
 
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs')
 const { validationResult } = require('express-validator/check');
 
 const User = require('../models/user');
 
-exports.signup = (re, res, next) =>{
+exports.signup = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const error = new Error('Validation failed, entered data is incorrect.');
@@ -32,5 +31,36 @@ exports.signup = (re, res, next) =>{
         }
         next(err);
     });
+};
 
+exports.login = (req, res, next) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    let loadedUser; 
+    User.findOne({ email: email}).then(user => {
+        if(!user) {
+            const error = new Error('Password and/or email are wrong');
+            error.statusCode = 401;
+            throw error;
+        }
+        loadedUser = user;
+        return bcrypt.compare(password, user.password)
+    }). then(isEqual => {
+        if(!isEqual) {
+            const error = new Error('Password and/or email are wrong');
+            error.statusCode = 401;
+            throw error;
+        }
+        const token = jwt.sign({
+            email: loadedUser.email, 
+            userId: loadedUser._id.toString()
+        }, 'somesupersecretsecret',
+        { expiresIn: '1h'});
+        res.status(200).json({token: token, userId: loadedUser._id.toString()})
+    }).catch(err => {
+        if(!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    });
 }
