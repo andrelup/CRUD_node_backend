@@ -44,19 +44,21 @@ exports.login = (req, res, next) => {
             throw error;
         }
         loadedUser = user;
-        return bcrypt.compare(password, user.password)
+        return bcrypt.compare(password, loadedUser.password)
     }). then(isEqual => {
         if(!isEqual) {
             const error = new Error('Password and/or email are wrong');
             error.statusCode = 401;
             throw error;
         }
+        const loadedEmail = loadedUser.email;
+        const loadedUserId = loadedUser._id.toString();
         const token = jwt.sign({
-            email: loadedUser.email, 
-            userId: loadedUser._id.toString()
+            email: loadedEmail, 
+            userId: loadedUserId
         }, 'somesupersecretsecret',
         { expiresIn: '1h'});
-        res.status(200).json({token: token, userId: loadedUser._id.toString()})
+        res.status(200).json({token: token, userId: loadedUserId})
     }).catch(err => {
         if(!err.statusCode) {
             err.statusCode = 500;
