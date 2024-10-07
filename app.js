@@ -7,7 +7,6 @@ const multer = require('multer');
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
-const { init } = require('./socket');
 
 const app = express();
 
