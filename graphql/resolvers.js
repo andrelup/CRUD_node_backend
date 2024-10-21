@@ -133,7 +133,7 @@ module.exports = {
           _id: p._id.toString(),
           createdAt: p.createdAt.toISOString(),
           updatedAt: p.updatedAt.toISOString()
-        }
+        };
       }),
       totalPosts: totalPosts
     };
@@ -158,7 +158,7 @@ module.exports = {
     } 
     return postFounded;
   },
-  updatePost: async function ({id,postInput}, req) {
+  updatePost: async function({ id, postInput }, req) {
     if (!req.isAuth) {
       const error = new Error('Not authenticated!');
       error.code = 401;
@@ -197,7 +197,7 @@ module.exports = {
     }
     post.title = postInput.title;
     post.content = postInput.content;
-    if(postInput.imageUrl !== 'undefined'){
+    if (postInput.imageUrl !== 'undefined') {
       post.imageUrl = postInput.imageUrl;
     }
     const updatedPost = await post.save();
@@ -214,20 +214,20 @@ module.exports = {
       error.code = 401;
       throw error;
     }
-    let post = await Post.findById(id).populate('creator');
+    const post = await Post.findById(id);
     if (!post) {
-      const error = new Error('Could not find post.');
-      error.statusCode = 404;
+      const error = new Error('No post found!');
+      error.code = 404;
       throw error;
     }
-    if(post.creator._id.toString() !== req.userId.toString()) {
+    if (post.creator.toString() !== req.userId.toString()) {
       const error = new Error('Not authorized!');
-      error.statusCode = 403;
+      error.code = 403;
       throw error;
     }
     clearImage(post.imageUrl);
     await Post.findByIdAndRemove(id);
-    const user = User.findById(req.userId);
+    const user = await User.findById(req.userId);
     user.posts.pull(id);
     await user.save();
     return true;
@@ -240,14 +240,11 @@ module.exports = {
     }
     const user = await User.findById(req.userId);
     if (!user) {
-      const error = new Error('No user found.');
+      const error = new Error('No user found!');
       error.code = 404;
       throw error;
     }
-    return {
-      ...user._doc,
-      _id: user._id.toString()
-    };
+    return { ...user._doc, _id: user._id.toString() };
   },
   updateStatus: async function({ status }, req) {
     if (!req.isAuth) {
@@ -257,15 +254,12 @@ module.exports = {
     }
     const user = await User.findById(req.userId);
     if (!user) {
-      const error = new Error('No user found.');
+      const error = new Error('No user found!');
       error.code = 404;
       throw error;
     }
     user.status = status;
     await user.save();
-    return {
-      ...user._doc,
-      _id: user._id.toString()
-    };
+    return { ...user._doc, _id: user._id.toString() };
   }
 };

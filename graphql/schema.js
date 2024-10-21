@@ -24,7 +24,7 @@ module.exports = buildSchema(`
         token: String!
         userId: String!
     }
-    
+
     type PostData {
         posts: [Post!]!
         totalPosts: Int!
@@ -44,7 +44,7 @@ module.exports = buildSchema(`
 
     type RootQuery {
         login(email: String!, password: String!): AuthData!
-        posts(page: Int!): PostData!
+        posts(page: Int): PostData!
         post(id: ID!): Post!
         user: User!
     }
@@ -54,7 +54,7 @@ module.exports = buildSchema(`
         createPost(postInput: PostInputData): Post!
         updatePost(id: ID!, postInput: PostInputData): Post!
         deletePost(id: ID!): Boolean
-        updateStatus(status: String): User!
+        updateStatus(status: String!): User!
     }
 
     schema {
