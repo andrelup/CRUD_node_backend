@@ -4,14 +4,12 @@ const mongoose = require('mongoose');
 
 const User = require('../models/user');
 const FeedController = require('../controllers/feed');
+const mongodb_uri =  'mongodb+srv://andrelup:crud_project@cluster0.awtuofy.mongodb.net/blog_crud_test';
 
 describe('Feed Controller', function() {
   before(function(done) {
     mongoose
-      .connect(
-        'mongodb+srv://maximilian:fmFLrH6d0DjMxWcg@cluster0-ntrwp.mongodb.net/test-messages?retryWrites=true'
-      )
-      .then(result => {
+      .connect( mongodb_uri ).then(result => {
         const user = new User({
           email: 'test@test.com',
           password: 'tester',
